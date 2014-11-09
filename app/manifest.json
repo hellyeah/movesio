@@ -1,12 +1,13 @@
 {
     "name": "__MSG_appName__",
-    "version": "0.0.2",
+    "version": "0.0.4",
     "manifest_version": 2,
     "description": "__MSG_appDescription__",
     "icons": {
         "16": "images/icon-16.png",
         "128": "images/icon-128.png"
     },
+    //name and description stored in app/_locales/en/messages.json
     "default_locale": "en",
     "background": {
         "scripts": [
