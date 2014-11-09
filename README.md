@@ -1,0 +1,1 @@
+Upload just the app/ folder as a chrome extension to run. 

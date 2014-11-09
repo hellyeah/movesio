@@ -1,10 +1,10 @@
 {
   "appName": {
     "message": "movesio",
-    "description": "The name of the application"
+    "description": "Make Moves"
   },
   "appDescription": {
-    "message": "Make Moves",
-    "description": "The description of the application"
+    "message": "Instantly get any founder's email.",
+    "description": "Ready to make moves? Hit the make moves button on any startup website and get an alert with the founder's email. Beta only works on ~50% of startups so far. Will work on them all by the end of the day."
   }
 }
