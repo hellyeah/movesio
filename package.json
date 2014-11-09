@@ -4,7 +4,9 @@
   "scripts": {
     "postinstall": "bower install"
   },
-  "dependencies": {},
+  "dependencies": {
+    "wiredep": "^2.1.0"
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.5.0",
@@ -26,7 +28,8 @@
     "time-grunt": "~0.3.1",
     "jshint-stylish": "~0.1.5",
     "grunt-chrome-manifest": "~0.2.0",
-    "grunt-contrib-compress": "~0.9.1"
+    "grunt-contrib-compress": "~0.9.1",
+    "grunt-wiredep": "^1.9.0"
   },
   "engines": {
     "node": ">=0.8.0"
