@@ -7,7 +7,6 @@
         "16": "images/icon-16.png",
         "128": "images/icon-128.png"
     },
-    //name and description stored in app/_locales/en/messages.json
     "default_locale": "en",
     "background": {
         "scripts": [
@@ -21,9 +20,9 @@
             "38": "images/icon-38.png"
         },
         "default_title": "movesio",
-        "default_popup": "popup.html"
+        "default_popup": "views/popup.html"
     },
-    "options_page": "options.html",
+    "options_page": "views/options.html",
     "omnibox": {
         "keyword": "movesio"
     },
