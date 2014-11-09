@@ -42,8 +42,14 @@ var asyncTracking = function () {
   //   ga.src = 'https://ssl.google-analytics.com/ga.js';
   //   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   // })();
+//Segment.io
+// window.analytics=window.analytics||[],window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(t){return function(){var a=Array.prototype.slice.call(arguments);return a.unshift(t),window.analytics.push(a),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(t){if(!document.getElementById("analytics-js")){var a=document.createElement("script");a.type="text/javascript",a.id="analytics-js",a.async=!0,a.src=("https://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n)}},window.analytics.SNIPPET_VERSION="2.0.9",
+// window.analytics.load("Ng0ctItA2L");
+// window.analytics.page();
+// console.log('segment.io')
 
 }
+asyncTracking();
 
 loadScript("https://parse.com/downloads/javascript/parse-1.3.1.min.js", initializeParse);
 //loadScript(asyncTracking);
@@ -74,7 +80,14 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   //**Analytics**//
   //do one for works and doesnt work
   //_gaq.push(['_trackPageview']);
-  _gaq.push(['_trackEvent', tab.url, 'clicked']);
+  // analytics.track('clicked', {
+  //   url: tab.url
+  // });
+  analytics.track('click', {
+    category: 'sitesClicked',
+    label: tab.url
+  });
+  //_gaq.push(['_trackEvent', tab.url, 'clicked']);
 
   chrome.extension.getBackgroundPage().console.log(tab.url);
 
@@ -129,5 +142,16 @@ var stripSubdomains = function (url) {
     return url;
   }
 };
+
+chrome.runtime.onInstalled.addListener(function(info){
+    //    
+    // info.reason should contain either "install" or "update"
+
+    var sessionId = localStorage.getItem("session-id");
+
+    if(!sessionId){
+      localStorage.setItem("session-id", "random-session-id");
+    }
+});
 
 
