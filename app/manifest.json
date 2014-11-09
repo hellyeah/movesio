@@ -30,6 +30,9 @@
         "default_title": "Make Moves"
         //"default_popup": "views/popup.html"
     },
+    "chrome_url_overrides" : {
+        "newtab": "views/moves_tab.html"
+    },
     "options_page": "views/options.html",
     "omnibox": {
         "keyword": "movesio"
