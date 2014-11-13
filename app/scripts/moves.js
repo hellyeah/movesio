@@ -15,8 +15,11 @@ angular.module('moves', [])
         for (var i = 0; i < startups.length; i++) { 
           var startup = startups[i];
           $scope.startupsArray.push(startup);
+          $scope.startupsArray = _.uniq($scope.startupsArray, function(startup) {
+            return startup.get('url');
+          });
           $scope.$apply();
-          console.log($scope.startupsArray);
+          //console.log($scope.startupsArray);
         }
         //console.log(startups);
         // The object was retrieved successfully.
