@@ -18,7 +18,7 @@
       <div ng-controller="movesController">
         <ul id='startupList' class="unstyled">
           <li class='startupTile' ng-repeat="startup in startupsArray">
-            <div class="tile-title">{{startup.get('url')}}</div>
+            <div class="tile-title"><a style="text-decoration: none; color: inherit;" href="http://{{startup.get('url')}}">{{startup.get('url')}}</a></div>
           </li>
         </ul>
       </div>
