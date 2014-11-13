@@ -131,10 +131,10 @@ var saveSite = function (shortURL, longURL) {
 */
 
 
-var saveSiteToParse = function (shortURL, longURL callback) {
+var saveSiteToParse = function(shortURL, longURL, callback) {
     var Startup = Parse.Object.extend("Startups");
     var startup = new Startup();
-    startup.save({url: shortURL}).then(function(object) {
+    startup.save({url: shortURL, longURL: longURL}).then(function(object) {
       callback('saved startup');
     });
 }

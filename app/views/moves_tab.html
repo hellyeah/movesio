@@ -11,17 +11,15 @@
         <!-- endbuild -->
     </head>
     <body>
-        <h1>Ready to make moves?</h1>
+      <h1>Ready to make moves?</h1>
 
-    <div ng-controller="movesController">
-      <ul class="unstyled">
-        <li ng-repeat="startup in startupsArray">
-          <span class="">{{startup}}</span>
-        </li>
-      </ul>
-    </div>
-
-
+      <div ng-controller="movesController">
+        <ul class="unstyled">
+          <li ng-repeat="startup in startupsArray">
+            <span class="">{{startup.get('url')}}</span>
+          </li>
+        </ul>
+      </div>
 
         <!-- build:js scripts/vendor.js -->
         <!-- bower:js -->
