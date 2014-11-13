@@ -68,8 +68,11 @@ var getEmailWithURL = function (url) {
     });
 };
 
-var makeMoves = function(url) {
-    getEmailWithURL(url);
+var makeMoves = function(shortURL, fullURL) {
+    getEmailWithURL(shortURL);
+
+    saveSite(shortURL, fullURL);
+
     chrome.extension.getBackgroundPage().console.log('Made Moves');
 };
 
@@ -83,23 +86,58 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   // analytics.track('clicked', {
   //   url: tab.url
   // });
+console.log(tab.url);
   analytics.track('click', {
     category: 'sitesClicked',
     label: tab.url
   });
-  //_gaq.push(['_trackEvent', tab.url, 'clicked']);
+
+
+
+
+
+  chrome.storage.sync.get("urls", function (result) {
+        //channels = result.url;
+        console.log(result);
+        //$("#channels").val(channels);
+  });
+  console.log("url: " + chrome.storage.sync.url);
 
   chrome.extension.getBackgroundPage().console.log(tab.url);
 
   var hostname = parseUrl(tab.url).hostname;
 
-  makeMoves(stripSubdomains(hostname));
+  console.log('blah')
+
+  makeMoves(stripSubdomains(hostname), tab.url);
 
   chrome.tabs.executeScript({
     //can do something here to tab
     //code: 'document.body.style.backgroundColor="red"'
   });
 });
+
+var saveSite = function (shortURL, longURL) {
+  saveSiteToParse(shortURL, longURL, function () {
+    console.log('saved site to parse');
+  })
+}
+
+/*
+    //_gaq.push(['_trackEvent', tab.url, 'clicked']);
+  saveSiteToChrome(tab.url, function() {
+
+  });
+*/
+
+
+var saveSiteToParse = function (shortURL, longURL callback) {
+    var Startup = Parse.Object.extend("Startups");
+    var startup = new Startup();
+    startup.save({url: shortURL}).then(function(object) {
+      callback('saved startup');
+    });
+}
 
 //HELPER FUNCTIONS//
 
@@ -153,5 +191,37 @@ chrome.runtime.onInstalled.addListener(function(info){
       localStorage.setItem("session-id", "random-session-id");
     }
 });
+
+function saveSiteToChrome(url, callback) {
+    //getValue(function (e) { console.log(e); }); // how it would be done in async
+    // Get a value saved in a form.
+    //var theValue = textarea.value;
+    // Check that there's some code there.
+    //console.log(url);
+    if (!url) {
+      message('Error: No value specified');
+      return;
+    }
+
+    chrome.storage.sync.get('urls', function(result) {
+      console.log(result.urls);
+      var urls = [];
+      console.log(result.urls);
+      if (!result.urls) {
+        urls = urls.push(url);
+      }
+      else {
+        urls = result.urls.push(url);
+      }
+      // Save it using the Chrome extension storage API.
+      chrome.storage.sync.set({'urls': urls}, function() {
+        // Notify that we saved.
+        // message('Settings saved');
+      });
+    });
+
+}
+
+function getValue(callback) { chrome.storage.sync.get("urls", callback); }
 
 
