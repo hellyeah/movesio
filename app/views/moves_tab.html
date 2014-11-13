@@ -9,14 +9,16 @@
         <!-- build:css styles/main.css -->
         <!--<link href="styles/main.css" rel="stylesheet">-->
         <!-- endbuild -->
+        <link href="../styles/tab.css" rel="stylesheet">
     </head>
     <body>
-      <h1>Ready to make moves?</h1>
+      <div id='siteTitle'>Moves.io</div>
+      <div id='siteSubtitle'>Ready to make Moves?</div>
 
       <div ng-controller="movesController">
-        <ul class="unstyled">
-          <li ng-repeat="startup in startupsArray">
-            <span class="">{{startup.get('url')}}</span>
+        <ul id='startupList' class="unstyled">
+          <li class='startupTile' ng-repeat="startup in startupsArray">
+            <div class="tile-title">{{startup.get('url')}}</div>
           </li>
         </ul>
       </div>
