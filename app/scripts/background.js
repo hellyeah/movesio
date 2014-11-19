@@ -1,4 +1,4 @@
-chrome.extension.getBackgroundPage().console.log('foo');
+//chrome.extension.getBackgroundPage().console.log('foo');
 
 //**Initialization**//
 
@@ -73,7 +73,7 @@ var makeMoves = function(shortURL, fullURL) {
 
     saveSite(shortURL, fullURL);
 
-    chrome.extension.getBackgroundPage().console.log('Made Moves');
+    //chrome.extension.getBackgroundPage().console.log('Made Moves');
 };
 
 // Called when the user clicks on the browser action.
@@ -96,18 +96,18 @@ console.log(tab.url);
 
 
 
-  chrome.storage.sync.get("urls", function (result) {
-        //channels = result.url;
-        console.log(result);
-        //$("#channels").val(channels);
-  });
-  console.log("url: " + chrome.storage.sync.url);
+  // chrome.storage.sync.get("urls", function (result) {
+  //       //channels = result.url;
+  //       //console.log(result);
+  //       //$("#channels").val(channels);
+  // });
+  // console.log("url: " + chrome.storage.sync.url);
 
-  chrome.extension.getBackgroundPage().console.log(tab.url);
+  // chrome.extension.getBackgroundPage().console.log(tab.url);
 
   var hostname = parseUrl(tab.url).hostname;
 
-  console.log('blah')
+  // console.log('blah')
 
   makeMoves(stripSubdomains(hostname), tab.url);
 
@@ -119,9 +119,13 @@ console.log(tab.url);
 
 var saveSite = function (shortURL, longURL) {
   saveSiteToParse(shortURL, longURL, function () {
-    console.log('saved site to parse');
+    // console.log('saved site to parse');
   })
+
+  saveSiteToChrome(shortURL, longURL);
 }
+
+
 
 /*
     //_gaq.push(['_trackEvent', tab.url, 'clicked']);
@@ -192,36 +196,53 @@ chrome.runtime.onInstalled.addListener(function(info){
     }
 });
 
-function saveSiteToChrome(url, callback) {
+function saveSiteToChrome(url, longURL) {
     //getValue(function (e) { console.log(e); }); // how it would be done in async
     // Get a value saved in a form.
     //var theValue = textarea.value;
     // Check that there's some code there.
     //console.log(url);
-    if (!url) {
-      message('Error: No value specified');
-      return;
-    }
+    chrome.storage.sync.get('blah', function(result) {
+      console.log('HELLLL YEAH')
+      console.log(result.blah);
+      result.blah.push(results);
 
-    chrome.storage.sync.get('urls', function(result) {
-      console.log(result.urls);
-      var urls = [];
-      console.log(result.urls);
-      if (!result.urls) {
-        urls = urls.push(url);
-      }
-      else {
-        urls = result.urls.push(url);
-      }
-      // Save it using the Chrome extension storage API.
-      chrome.storage.sync.set({'urls': urls}, function() {
-        // Notify that we saved.
-        // message('Settings saved');
-      });
+      chrome.storage.sync.set({'blah': result.blah}, function() {});
     });
+
+
+
+
+
+    // console.log('save site to chrome');
+    // if (!url) {
+    //   message('Error: No value specified');
+    //   return;
+    // }
+
+    // chrome.storage.sync.get('urls', function(result) {
+    //   console.log(result);
+    //   var urls = [];
+    //   urls = result.push(url);
+      
+    //   if (!result) {
+    //     urls = urls.push(url);
+    //   }
+    //   else {
+    //     urls = urls.push(url);
+    //   }
+      
+
+    //   // Save it using the Chrome extension storage API.
+    //   chrome.storage.sync.set({'blah': []}, function() {
+    //     // Notify that we saved.
+    //     // message('Settings saved');
+    //   });
+
+    // });
 
 }
 
-function getValue(callback) { chrome.storage.sync.get("urls", callback); }
+function getValue(callback) { chrome.storage.sync.get("blah", callback); }
 
 
