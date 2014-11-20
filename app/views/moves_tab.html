@@ -16,10 +16,19 @@
       <div id='siteSubtitle'>Ready to make Moves?</div>
 
       <div ng-controller="movesController">
+        <button ng-click="printStorage()">print storage</button>
+        <button ng-click="printStartupsArray()">print startups array</button>
+        <br>
+        <button ng-click="addStartupsFromStorage()">add startups from storage</button>
+        <br>
+        <button ng-click="saveToStorage()">save</button>
+        <button ng-click="saveStartup()">save startup</button>
+        <input type="text" ng-model="startupURL"  size="30"
+               placeholder="add new startup here">
         <ul id='startupList' class="unstyled">
           <li class='startupTile' ng-repeat="startup in startupsArray">
             <div class="tile-title">
-            <a style="text-decoration: none; color: inherit;" href="http://{{startup.get('url')}}" target="_blank">{{startup.get('url')}}</a>
+            <a style="text-decoration: none; color: inherit;" href="http://{{startup}}" target="_blank">{{startup}}</a>
             </div>
           </li>
         </ul>

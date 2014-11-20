@@ -117,23 +117,17 @@ console.log(tab.url);
   });
 });
 
-var saveSite = function (shortURL, longURL) {
-  saveSiteToParse(shortURL, longURL, function () {
-    // console.log('saved site to parse');
-  })
 
-  saveSiteToChrome(shortURL, longURL);
-}
+//STORAGE - Chrome & Parse//
 
-
-
-/*
-    //_gaq.push(['_trackEvent', tab.url, 'clicked']);
-  saveSiteToChrome(tab.url, function() {
-
+var appendToStorage = function(startup) {
+  chrome.storage.sync.get(null, function(result) {
+    //forsome reason this prints the new results with startup pushed
+    console.log(result);
+    result.startupsArray.push(startup);
+    chrome.storage.sync.set({'startupsArray': result.startupsArray}, function() {});
   });
-*/
-
+}
 
 var saveSiteToParse = function(shortURL, longURL, callback) {
     var Startup = Parse.Object.extend("Startups");
@@ -142,6 +136,16 @@ var saveSiteToParse = function(shortURL, longURL, callback) {
       callback('saved startup');
     });
 }
+
+var saveSite = function (shortURL, longURL) {
+  saveSiteToParse(shortURL, longURL, function () {
+    // console.log('saved site to parse');
+  })
+
+  //saveSiteToChrome(shortURL, longURL);
+  appendToStorage(shortURL);
+}
+
 
 //HELPER FUNCTIONS//
 
@@ -195,54 +199,3 @@ chrome.runtime.onInstalled.addListener(function(info){
       localStorage.setItem("session-id", "random-session-id");
     }
 });
-
-function saveSiteToChrome(url, longURL) {
-    //getValue(function (e) { console.log(e); }); // how it would be done in async
-    // Get a value saved in a form.
-    //var theValue = textarea.value;
-    // Check that there's some code there.
-    //console.log(url);
-    chrome.storage.sync.get('blah', function(result) {
-      console.log('HELLLL YEAH')
-      console.log(result.blah);
-      result.blah.push(results);
-
-      chrome.storage.sync.set({'blah': result.blah}, function() {});
-    });
-
-
-
-
-
-    // console.log('save site to chrome');
-    // if (!url) {
-    //   message('Error: No value specified');
-    //   return;
-    // }
-
-    // chrome.storage.sync.get('urls', function(result) {
-    //   console.log(result);
-    //   var urls = [];
-    //   urls = result.push(url);
-      
-    //   if (!result) {
-    //     urls = urls.push(url);
-    //   }
-    //   else {
-    //     urls = urls.push(url);
-    //   }
-      
-
-    //   // Save it using the Chrome extension storage API.
-    //   chrome.storage.sync.set({'blah': []}, function() {
-    //     // Notify that we saved.
-    //     // message('Settings saved');
-    //   });
-
-    // });
-
-}
-
-function getValue(callback) { chrome.storage.sync.get("blah", callback); }
-
-
