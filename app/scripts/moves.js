@@ -37,7 +37,7 @@ angular.module('moves', [])
         //forsome reason this prints the new results with startup pushed
         console.log(result);
         result.startupsArray.push(startup);
-        chrome.storage.sync.set({'startupsArray': result.startupsArray}, function() {$scope.syncStartups()});
+        chrome.storage.sync.set({'startupsArray': _.uniq(result.startupsArray)}, function() {$scope.syncStartups()});
       });
     }
 
@@ -60,7 +60,7 @@ angular.module('moves', [])
 
     $scope.addStartupsFromStorage = function(callback) {
       chrome.storage.sync.get(null, function(result) {
-        $scope.startupsArray = result.startupsArray;
+        $scope.startupsArray = _.uniq(result.startupsArray);
         $scope.$apply();
       });
 
