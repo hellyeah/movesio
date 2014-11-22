@@ -1,9 +1,30 @@
 angular.module('moves', [])
   .controller('movesController', function($scope) {
+    //Parse DB Initialization
     Parse.initialize("endFPswOSsCN37MBloqoBjGvQWpmO6XsvQtV0cZ0", "lQiHSY3tM2hjdFSTEzfxV0dMfHCBT8n82zRwYDfu");
-    $scope.startups = [];
+
+    //startupsArray is what is reflected on the page
+    //every time you change the array, make sure the added element is unique
     $scope.startupsArray = [];
 
+    //adds startups from chrome storage to the startupsArray 
+    //startupsArray appears on the page
+    $scope.addStartupsFromStorage = function(callback) {
+      chrome.storage.sync.get(null, function(result) {
+        $scope.startupsArray = _.uniq(result.startupsArray);
+        $scope.$apply();
+      });
+    }
+
+    //make sure startupsArray is always in sync
+    $scope.syncStartups = function () {
+      $scope.addStartupsFromStorage();
+      //may append from parse/external db after
+    }
+    $scope.syncStartups();
+
+
+    //DEBUGGING FUNCTIONS//
     $scope.printStartupsArray = function () {
       console.log($scope.startupsArray);
     }
@@ -58,24 +79,8 @@ angular.module('moves', [])
       }
     }
 
-    $scope.addStartupsFromStorage = function(callback) {
-      chrome.storage.sync.get(null, function(result) {
-        $scope.startupsArray = _.uniq(result.startupsArray);
-        $scope.$apply();
-      });
 
-      // console.log('adding startups from storage')
-      // $scope.getStorage(function(result) {
-      //   console.log(result.startupsArray);
-      //   $scope.addStartupsToPageFromArray(result.startupsArray);
-      // })
-    }
-
-    $scope.syncStartups = function () {
-      $scope.addStartupsFromStorage();
-    }
-    $scope.syncStartups();
-
+    //LOAD FROM EXTERNAL DBS//
     $scope.loadStartupsFromParse = function() {
       var Startups = Parse.Object.extend("Startups");
       var startups = new Parse.Query(Startups);
