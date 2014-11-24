@@ -13,7 +13,18 @@
         <link href="../styles/tab.css" rel="stylesheet">
     </head>
     <body>
-      <div id='siteTitle'>Moves.io</div>
+<script>(function(){var qs,js,q,s,d=document,gi=d.getElementById,ce=d.createElement,gt=d.getElementsByTagName,id='typef_orm',b='https://s3-eu-west-1.amazonaws.com/share.typeform.com/';if(!gi.call(d,id)){js=ce.call(d,'script');js.id=id;js.src=b+'share.js';q=gt.call(d,'script')[0];q.parentNode.insertBefore(js,q)}id=id+'_';if(!gi.call(d,id)){qs=ce.call(d,'link');qs.rel='stylesheet';qs.id=id;qs.href=b+'share-button.css';s=gt.call(d,'head')[0];s.appendChild(qs,s)}})()</script>
+
+      <div id='siteTitle'>
+        Moves.io
+        <button><a class="apply button" href="https://hackmatch.typeform.com/to/oAufb3" data-mode="1" target="_blank">Apply for a HackMatch Agent!</a></button>
+
+
+
+
+
+
+      </div>
       <div id='siteSubtitle'>Ready to make Moves?</div>
 
       <div ng-controller="movesController">
@@ -34,11 +45,11 @@
             <div class="tile-title">
             <!-- do an if that checks if the star should be full or empty in another object in our chrome storage
             fa-star-o fa-star -->
-                <i class="star fa fa-star-o" ng-click="clickedStar"></i>
+                <i class="star fa fa-star-o" ng-click="clickedStar(startup)"></i>
                 <a style="text-decoration: none; color: inherit;" href="http://{{startup}}" target="_blank">
                     {{startup}}
                 </a>
-                <button class="intro" ng-click="clickedIntro">
+                <button class="intro" ng-click="clickedIntro(startup)">
                     intro
                 </button>
             </div>

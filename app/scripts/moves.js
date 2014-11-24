@@ -23,12 +23,12 @@ angular.module('moves', [])
     }
     $scope.syncStartups();
 
-    $scope.clickedIntro = function () {
-
+    $scope.clickedIntro = function (startup) {
+      alert('clicked intro for ' + startup);
     }
 
-    $scope.clickedStar = function () {
-      
+    $scope.clickedStar = function (startup) {
+      alert('clicked star for ' + startup);
     }
 
 
