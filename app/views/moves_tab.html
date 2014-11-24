@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <!-- build:css styles/vendor.css -->
         <!-- bower:css -->
+        <link rel="stylesheet" href="../bower_components/fontawesome/css/font-awesome.css" />
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:css styles/main.css -->
@@ -16,6 +17,7 @@
       <div id='siteSubtitle'>Ready to make Moves?</div>
 
       <div ng-controller="movesController">
+        <!--DEBUGGING-->
         <button ng-click="printStorage()">print storage</button>
         <button ng-click="printStartupsArray()">print startups array</button>
         <br>
@@ -25,10 +27,20 @@
         <button ng-click="saveStartup()">save startup</button>
         <input type="text" ng-model="startupURL"  size="30"
                placeholder="add new startup here">
+        <button ng-click="removeStartup()">remove startup</button>
+        <!--/DEBUGGING-->
         <ul id='startupList' class="unstyled">
           <li class='startupTile' ng-repeat="startup in startupsArray">
             <div class="tile-title">
-            <a style="text-decoration: none; color: inherit;" href="http://{{startup}}" target="_blank">{{startup}}</a>
+            <!-- do an if that checks if the star should be full or empty in another object in our chrome storage
+            fa-star-o fa-star -->
+                <i class="star fa fa-star-o" ng-click="clickedStar"></i>
+                <a style="text-decoration: none; color: inherit;" href="http://{{startup}}" target="_blank">
+                    {{startup}}
+                </a>
+                <button class="intro" ng-click="clickedIntro">
+                    intro
+                </button>
             </div>
           </li>
         </ul>

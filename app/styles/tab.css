@@ -72,4 +72,14 @@ body {
 	color: #5A5A5A;
 }
 
+.star {
+	display: inline;
+	float: left;
+}
+
+.intro {
+	display: inline;
+	float: right;
+}
+
 

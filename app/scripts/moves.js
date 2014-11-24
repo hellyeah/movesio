@@ -23,6 +23,14 @@ angular.module('moves', [])
     }
     $scope.syncStartups();
 
+    $scope.clickedIntro = function () {
+
+    }
+
+    $scope.clickedStar = function () {
+      
+    }
+
 
     //DEBUGGING FUNCTIONS//
     $scope.printStartupsArray = function () {
@@ -43,6 +51,23 @@ angular.module('moves', [])
       // $scope.getStorage(function(result) {
       //   console.log(result);
       // });
+    }
+
+    $scope.removeSpecificStartup = function(startup) {
+      chrome.storage.sync.get(null, function(result) {
+        //forsome reason this prints the new results with startup pushed
+        console.log(result);
+        //result.startupsArray.pop(startup);
+        var index = result.startupsArray.indexOf(startup);
+        if (index > -1) {
+            result.startupsArray.splice(index, 1);
+        }
+        chrome.storage.sync.set({'startupsArray': _.uniq(result.startupsArray)}, function() {$scope.syncStartups()});
+      });
+    }
+
+    $scope.removeStartup = function() {
+      $scope.removeSpecificStartup($scope.startupURL);
     }
 
     $scope.saveToStorage = function() {
