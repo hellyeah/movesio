@@ -16,7 +16,6 @@
     "browser_action": {
         "default_icon": "images/moves_icon.png",
         "default_title": "Make Moves"
-        //"default_popup": "views/popup.html"
     },
     "options_page": "views/options.html",
     "omnibox": {
