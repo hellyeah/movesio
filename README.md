@@ -1,4 +1,5 @@
-Upload just the app/ folder as a chrome extension to run. 
+# Upload just the app/ folder as a chrome extension to run. 
+# Warning: any time you add a dependency or new analytics service, make sure to add it to manifest file CSP
 
 Hack the startup job search
 
