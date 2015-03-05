@@ -1,3 +1,5 @@
+"use strict";
+
 var initializeParse = function() {
     Parse.initialize("endFPswOSsCN37MBloqoBjGvQWpmO6XsvQtV0cZ0", "lQiHSY3tM2hjdFSTEzfxV0dMfHCBT8n82zRwYDfu");
 }

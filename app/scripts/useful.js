@@ -1,3 +1,5 @@
+"use strict";
+
 //**USEFUL FUNCTIONS**//
 
 //Allows you to load JS files 
