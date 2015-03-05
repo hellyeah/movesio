@@ -6,8 +6,9 @@
 //asyncTracking.js -- linked up to Segment for analytics
 //backend.js -- loads Parse/Firebase
 
-
 //**REAL FUNCTIONS**//
+
+//structure: when you click button, what happens?
 
 var getEmailWithURL = function (url) {
     //**crunchbase or team page search by url for founders names
@@ -33,41 +34,16 @@ var makeMoves = function(shortURL, fullURL) {
 chrome.browserAction.onClicked.addListener(function(tab) {
   // No tabs or host permissions needed! 
   // tab.url is current url
-  //**Analytics**//
-  //do one for works and doesnt work
-  //_gaq.push(['_trackPageview']);
-  // analytics.track('clicked', {
-  //   url: tab.url
-  // });
-console.log(tab.url);
+
   analytics.track('click', {
     category: 'sitesClicked',
     label: tab.url
   });
 
-
-
-
-
-  // chrome.storage.sync.get("urls", function (result) {
-  //       //channels = result.url;
-  //       //console.log(result);
-  //       //$("#channels").val(channels);
-  // });
-  // console.log("url: " + chrome.storage.sync.url);
-
-  // chrome.extension.getBackgroundPage().console.log(tab.url);
-
   var hostname = parseUrl(tab.url).hostname;
-
-  // console.log('blah')
 
   makeMoves(stripSubdomains(hostname), tab.url);
 
-  chrome.tabs.executeScript({
-    //can do something here to tab
-    //code: 'document.body.style.backgroundColor="red"'
-  });
 });
 
 
