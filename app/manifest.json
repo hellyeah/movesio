@@ -8,6 +8,7 @@
         "scripts": [
             "scripts/chromereload.js",
             "scripts/asyncTracking.js",
+            "scripts/useful.js",
             "scripts/background.js"
         ],
         "persistent": false

@@ -1,25 +1,12 @@
-//chrome.extension.getBackgroundPage().console.log('foo');
+//Moves.io
+//Hit the make moves button on any startup website and get founder's email in an alert
+
+//**JS LOADED BEFOREHAND**//
+//**MUST DECLARE IN MANIFEST -- ORDER MATTERS**//
+//asyncTracking.js -- linked up to Segment for analytics
+//backend.js -- loads Parse/Firebase
 
 //**Initialization**//
-
-//Load JS files
-function loadScript(url, callback)
-{
-    // Adding the script tag to the head as suggested before
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = url;
-
-    // Then bind the event to the callback function.
-    // There are several events for cross browser compatibility.
-    script.onreadystatechange = callback;
-    script.onload = callback;
-
-    // Fire the loading
-    head.appendChild(script);
-}
-
 var initializeParse = function() {
     //Initialized Parse
     Parse.initialize("endFPswOSsCN37MBloqoBjGvQWpmO6XsvQtV0cZ0", "lQiHSY3tM2hjdFSTEzfxV0dMfHCBT8n82zRwYDfu");
