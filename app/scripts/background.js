@@ -1,60 +1,14 @@
-//chrome.extension.getBackgroundPage().console.log('foo');
+//Moves.io
+//Hit the make moves button on any startup website and get founder's email in an alert
 
-//**Initialization**//
-
-//Load JS files
-function loadScript(url, callback)
-{
-    // Adding the script tag to the head as suggested before
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = url;
-
-    // Then bind the event to the callback function.
-    // There are several events for cross browser compatibility.
-    script.onreadystatechange = callback;
-    script.onload = callback;
-
-    // Fire the loading
-    head.appendChild(script);
-}
-
-var initializeParse = function() {
-    //Initialized Parse
-    Parse.initialize("endFPswOSsCN37MBloqoBjGvQWpmO6XsvQtV0cZ0", "lQiHSY3tM2hjdFSTEzfxV0dMfHCBT8n82zRwYDfu");
-    //Saves test object
-    var TestObject = Parse.Object.extend("TestObject");
-    var testObject = new TestObject();
-    testObject.save({foo: "bar"}).then(function(object) {
-      //alert("yay! it worked");
-    });
-}
-
-var asyncTracking = function () {
-
-  // var _gaq = _gaq || [];
-  // _gaq.push(['_setAccount', 'UA-56144706-1']);
-  // _gaq.push(['_trackPageview']);
-
-  // (function() {
-  //   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  //   ga.src = 'https://ssl.google-analytics.com/ga.js';
-  //   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  // })();
-//Segment.io
-// window.analytics=window.analytics||[],window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(t){return function(){var a=Array.prototype.slice.call(arguments);return a.unshift(t),window.analytics.push(a),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(t){if(!document.getElementById("analytics-js")){var a=document.createElement("script");a.type="text/javascript",a.id="analytics-js",a.async=!0,a.src=("https://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n)}},window.analytics.SNIPPET_VERSION="2.0.9",
-// window.analytics.load("Ng0ctItA2L");
-// window.analytics.page();
-// console.log('segment.io')
-
-}
-asyncTracking();
-
-loadScript("https://parse.com/downloads/javascript/parse-1.3.1.min.js", initializeParse);
-//loadScript(asyncTracking);
+//**JS LOADED BEFOREHAND**//
+//warning: must declare js files in loading order in manifest
+//asyncTracking.js -- linked up to Segment for analytics
+//backend.js -- loads Parse/Firebase
 
 //**REAL FUNCTIONS**//
+
+//structure: when you click button, what happens?
 
 var getEmailWithURL = function (url) {
     //**crunchbase or team page search by url for founders names
@@ -80,41 +34,16 @@ var makeMoves = function(shortURL, fullURL) {
 chrome.browserAction.onClicked.addListener(function(tab) {
   // No tabs or host permissions needed! 
   // tab.url is current url
-  //**Analytics**//
-  //do one for works and doesnt work
-  //_gaq.push(['_trackPageview']);
-  // analytics.track('clicked', {
-  //   url: tab.url
-  // });
-console.log(tab.url);
+
   analytics.track('click', {
     category: 'sitesClicked',
     label: tab.url
   });
 
-
-
-
-
-  // chrome.storage.sync.get("urls", function (result) {
-  //       //channels = result.url;
-  //       //console.log(result);
-  //       //$("#channels").val(channels);
-  // });
-  // console.log("url: " + chrome.storage.sync.url);
-
-  // chrome.extension.getBackgroundPage().console.log(tab.url);
-
   var hostname = parseUrl(tab.url).hostname;
-
-  // console.log('blah')
 
   makeMoves(stripSubdomains(hostname), tab.url);
 
-  chrome.tabs.executeScript({
-    //can do something here to tab
-    //code: 'document.body.style.backgroundColor="red"'
-  });
 });
 
 
