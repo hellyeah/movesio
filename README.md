@@ -1,5 +1,6 @@
 # Upload just the app/ folder as a chrome extension to run. 
 # Warning: any time you add a dependency or new analytics service, make sure to add it to manifest file CSP
+# This is currently not working because of problems with the CSP
 
 Hack the startup job search
 
