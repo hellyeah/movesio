@@ -6,18 +6,6 @@
 //asyncTracking.js -- linked up to Segment for analytics
 //backend.js -- loads Parse/Firebase
 
-//**Initialization**//
-var initializeParse = function() {
-    //Initialized Parse
-    Parse.initialize("endFPswOSsCN37MBloqoBjGvQWpmO6XsvQtV0cZ0", "lQiHSY3tM2hjdFSTEzfxV0dMfHCBT8n82zRwYDfu");
-    //Saves test object
-    var TestObject = Parse.Object.extend("TestObject");
-    var testObject = new TestObject();
-    testObject.save({foo: "bar"}).then(function(object) {
-      //alert("yay! it worked");
-    });
-}
-
 var asyncTracking = function () {
 
   // var _gaq = _gaq || [];
@@ -38,8 +26,6 @@ var asyncTracking = function () {
 }
 asyncTracking();
 
-loadScript("https://parse.com/downloads/javascript/parse-1.3.1.min.js", initializeParse);
-//loadScript(asyncTracking);
 
 //**REAL FUNCTIONS**//
 
