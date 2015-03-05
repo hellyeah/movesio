@@ -11,7 +11,8 @@ body {
 	text-align: center;
 	color: #222;
 	font: 500 40px/1.2 "DINWeb","Lucida Grande",verdana,sans-serif;
-	margin: 12px 0 0 0;
+/*	margin: 12px 0 0 0;*/
+	margin: 0 0 0 0;
 	font-size: -webkit-font-smoothing: antialiased;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -43,12 +44,12 @@ body {
 	box-shadow: 0 0 8px rgba(50,50,50,.15);
 	cursor: pointer;
 	display: inline-block;
-	padding: 6px 16px 20px 16px;
+	padding: 6px 16px 5px 16px;
 	box-sizing: border-box;
 	position: relative;
 	text-align: center;
 	width: 100%;
-	height: 30px;
+/*	height: 30px;*/
 	float: left;
 	margin: 5px 0 0 0;
 	vertical-align: top;
@@ -66,9 +67,9 @@ body {
 	text-transform: uppercase;
 	-webkit-font-smoothing: antialiased;
 	text-overflow: ellipsis;
-	overflow: hidden;
+/*	overflow: hidden;
 	min-height: 25px !important;
-	max-height: 25px !important;
+	max-height: 25px !important;*/
 	color: #5A5A5A;
 }
 
@@ -86,6 +87,11 @@ body {
 	position: absolute;
 	top: 15px;
 	right: 15px;
+}
+
+.no-button {
+	border: none;
+	padding: 0;
 }
 
 

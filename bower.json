@@ -1,14 +1,53 @@
 {
-  "name": "movesio",
-  "version": "0.0.0",
-  "dependencies": {
-    "angular": "1.3.2",
-    "angular-route": "~1.3.2",
-    "angular-resource": "~1.3.2",
-    "firebase": "~2.0.2",
-    "angularfire": "~0.8.2",
-    "underscore": "~1.7.0",
-    "fontawesome": "~4.2.0"
-  },
-  "devDependencies": {}
+    "name": "__MSG_appName__",
+    "version": "0.0.4",
+    "manifest_version": 2,
+    "description": "__MSG_appDescription__",
+    /*
+    "icons": {
+        "16": "images/icon-16.png",
+        "128": "images/icon-128.png"
+    },
+    */
+    //name and description stored in app/_locales/en/messages.json
+    "default_locale": "en",
+    "background": {
+        "scripts": [
+            "scripts/chromereload.js",
+            "scripts/asyncTracking.js",
+            "scripts/background.js"
+        ],
+        "persistent": false
+    },
+    "browser_action": {
+        /*
+        "default_icon": {
+            "19": "images/icon-19.png",
+            "38": "images/icon-38.png"
+        },
+        */
+        "default_icon": "images/moves_icon.png",
+        "default_title": "Make Moves"
+        //"default_popup": "views/popup.html"
+    },
+    "chrome_url_overrides" : {
+        "newtab": "views/moves_tab.html"
+    },
+    "options_page": "views/options.html",
+    "omnibox": {
+        "keyword": "movesio"
+    },
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "storage",
+        "history",
+        "management",
+        "http://*/*",
+        "https://*/*"
+    ],
+    "icons": { "16": "images/moves_icon.png",
+           "48": "images/moves_icon.png",
+          "128": "images/moves_icon.png" },
+    "content_security_policy": "script-src 'unsafe-eval' 'self' https://hackmatch.typeform.com/to/oAufb3 https://parse.com/downloads/javascript/parse-1.3.1.min.js https://ssl.google-analytics.com https://cdn.segment.com/ https://www.google-analytics.com/analytics.js https://cdn.mxpnl.com/libs/mixpanel-2.2.min.js; object-src 'self'"
 }

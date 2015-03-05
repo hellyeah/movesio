@@ -1,5 +1,5 @@
-angular.module('moves', [])
-  .controller('movesController', function($scope) {
+angular.module('moves', ['ngMaterial'])
+  .controller('movesController', function($scope, $mdDialog) {
     //Parse DB Initialization
     Parse.initialize("endFPswOSsCN37MBloqoBjGvQWpmO6XsvQtV0cZ0", "lQiHSY3tM2hjdFSTEzfxV0dMfHCBT8n82zRwYDfu");
 
@@ -30,7 +30,26 @@ angular.module('moves', [])
     $scope.clickedStar = function (startup) {
       alert('clicked star for ' + startup);
     }
+    $scope.applyNow = function () {
+      window.open('https://hackmatch.typeform.com/to/oAufb3');
+    }
 
+    $scope.openStartup = function(ev, startup) {
+      console.log($mdDialog);
+      $mdDialog.show({
+        targetEvent: ev,
+        controller: 'DialogController',
+        template: 
+          '<md-dialog>' +
+          '  <md-content>' + 'Want an intro to ' + startup + '?' + '</md-content>' +
+          '  <div class="md-actions">' +
+          '    <md-button ng-click="applyNow()">' +
+          '      Apply for a HackMatch Agent' +
+          '    </md-button>' +
+          '  </div>' +
+          '</md-dialog>'
+      });
+    };
 
     //DEBUGGING FUNCTIONS//
     $scope.printStartupsArray = function () {
@@ -131,12 +150,22 @@ angular.module('moves', [])
     }
     //$scope.loadStartupsFromParse();
 
-  });
+  })
 
 
+.controller('DialogController', function DialogController($scope, $mdDialog) {
+  $scope.hide = function() {
+    $mdDialog.hide();
+  };
 
+  $scope.cancel = function() {
+    $mdDialog.cancel();
+  };
 
-
+  $scope.answer = function(answer) {
+    $mdDialog.hide(answer);
+  };
+})
 
 
 

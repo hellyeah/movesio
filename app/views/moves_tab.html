@@ -5,7 +5,9 @@
         <!-- build:css styles/vendor.css -->
         <!-- bower:css -->
         <link rel="stylesheet" href="../bower_components/fontawesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="../bower_components/angular-material/angular-material.css" />
         <!-- endbower -->
+        <link rel="stylesheet" type="text/css" href="../bower_components/angular-material/themes/blue-theme.css">
         <!-- endbuild -->
         <!-- build:css styles/main.css -->
         <!--<link href="styles/main.css" rel="stylesheet">-->
@@ -17,7 +19,7 @@
 
       <div id='siteTitle'>
         Moves.io
-        <button><a class="apply button" href="https://hackmatch.typeform.com/to/oAufb3" data-mode="1" target="_blank">Apply for a HackMatch Agent!</a></button>
+        <button class="no-button"><a style="font-size: 30%;" class="apply" href="https://hackmatch.typeform.com/to/oAufb3" data-mode="1" target="_blank">Apply for a HackMatch Agent!</a></button>
 
 
 
@@ -29,6 +31,7 @@
 
       <div ng-controller="movesController">
         <!--DEBUGGING-->
+        <!--
         <button ng-click="printStorage()">print storage</button>
         <button ng-click="printStartupsArray()">print startups array</button>
         <br>
@@ -39,19 +42,27 @@
         <input type="text" ng-model="startupURL"  size="30"
                placeholder="add new startup here">
         <button ng-click="removeStartup()">remove startup</button>
+        -->
         <!--/DEBUGGING-->
         <ul id='startupList' class="unstyled">
           <li class='startupTile' ng-repeat="startup in startupsArray">
-            <div class="tile-title">
+            <div class="tile-title" style="line-height: 25px;">
             <!-- do an if that checks if the star should be full or empty in another object in our chrome storage
             fa-star-o fa-star -->
                 <i class="star fa fa-star-o" ng-click="clickedStar(startup)"></i>
-                <a style="text-decoration: none; color: inherit;" href="http://{{startup}}" target="_blank">
+                <a style="text-decoration: none; color: inherit; line-height: 33px;" href="http://{{startup}}" target="_blank">
                     {{startup}}
                 </a>
-                <button class="intro" ng-click="clickedIntro(startup)">
+                <!-- <button class="intro" ng-click="clickedIntro(startup)">
                     intro
-                </button>
+                </button> -->
+                <md-button class="md-primary" ng-click="openStartup($event, startup)" style="touch-action: pan-y;
+-webkit-user-select: none;
+-webkit-user-drag: none;
+-webkit-tap-highlight-color: rgba(0, 0, 0, 0); float: right;
+margin-top: -3px;">
+                  Intro
+                </md-button>
             </div>
           </li>
         </ul>
@@ -67,6 +78,10 @@
         <script src="../bower_components/mockfirebase/dist/mockfirebase.js"></script>
         <script src="../bower_components/angularfire/dist/angularfire.min.js"></script>
         <script src="../bower_components/underscore/underscore.js"></script>
+        <script src="../bower_components/angular-animate/angular-animate.js"></script>
+        <script src="../bower_components/angular-aria/angular-aria.js"></script>
+        <script src="../bower_components/hammerjs/hammer.js"></script>
+        <script src="../bower_components/angular-material/angular-material.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
 
