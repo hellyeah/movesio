@@ -1,4 +1,5 @@
 "use strict";
+//TODO: Implement Angular
 
 //Moves.io
 //Hit the make moves button on any startup website and get founder's email in an alert
