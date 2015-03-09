@@ -1,5 +1,6 @@
 "use strict";
 //TODO: Implement Angular
+//implement whenever i need to save a scoped variable that stores the email -- maybe just use chrome storage
 
 //Moves.io
 //Hit the make moves button on any startup website and get founder's email in an alert
@@ -18,11 +19,84 @@
 
 //structure: when you click button, what happens?
 
+//Initialize Firebase
+var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
+
+var testFirebase = function (url) {
+    myFirebaseRef.set({
+      title: "Hello World!",
+      author: "Firebase",
+      location: {
+        city: "San Francisco",
+        state: "California",
+        zip: 94103
+      }
+    });
+
+    myFirebaseRef.child("location/city").on("value", function(snapshot) {
+      alert(snapshot.val());  // Alerts "San Francisco"
+    });
+}
+
+var getFirebaseJSON = function (callback) {
+  //grabs and returns full firebase JSON
+  myFirebaseRef.on("value", function(snapshot) {
+    console.log(snapshot.val());  // Alerts "San Francisco"
+    callback(snapshot.val());
+  });
+}
+
+var saveFoundersEmailToFirebase = function(url) {
+  console.log('save founder email to firebase')
+    myFirebaseRef.update({
+      "twitter": "noah@twitter.com"
+    });
+    Parse.Cloud.run('getFoundersEmail', {url: url}, {
+      success: function(result) {
+        //save to firebase
+        myFirebaseRef.update({
+          "hackmatch": "dave@hackmatch.com"
+        });
+        console.log(myFirebaseRef)
+      },
+      error: function(error) {
+        console.log('failure');
+      }
+    });
+}
+
+var stripTLD = function (url) {
+  var n = url.indexOf('.');
+  var domain = url.substring(0, n != -1 ? n : url.length);
+  //console.log(domain);
+  return domain
+}
+//stripTLD(stripSubdomains(parseUrl(tab.url).hostname))
+stripTLD("hackmatch.com")
+
+//keys are just '_startup_' in ('_startup_' + '.com')
+var checkIfURLExistsInFirebase = function (json, url) {
+  var key = stripTLD(url)
+  if(json.hasOwnProperty(key)){
+    console.log('has key')
+  } else {
+    console.log('doesnt have key')
+    saveFoundersEmailToFirebase("twitter.com")
+  }
+}
+getFirebaseJSON(function(JSON) {
+  //dynamically check subdomain
+  //subdomain without .com stripSubdomains(hostname).?
+  checkIfURLExistsInFirebase(JSON, "twitter.com")
+})
+
+
 var checkFirebaseForEmail = function (url) {
   //on page load
   //check firebase to see if an email exists for that url
   //if email isn't there yet, generate the email and save to firebase, then store it locally
   //if email is, store it locally to chrome storage
+
 }
 
 var saveEmailToFirebase = function (url) {
@@ -69,6 +143,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
   var hostname = parseUrl(tab.url).hostname;
 
+  console.log(Parse);
   makeMoves(stripSubdomains(hostname), tab.url);
 
 });
