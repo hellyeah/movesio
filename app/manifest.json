@@ -9,6 +9,8 @@
             "scripts/chromereload.js",
             "scripts/asyncTracking.js",
             "scripts/useful.js",
+            "bower_components/firebase/firebase.js",
+            "bower_components/parse/parse.js",
             "scripts/backend.js",
             "scripts/background.js"
         ],
