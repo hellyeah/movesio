@@ -3,6 +3,11 @@
 //Moves.io
 //Hit the make moves button on any startup website and get founder's email in an alert
 
+//TODO: make it run as soon as the page loads 
+//check firebase first for email
+//if not, run it
+//always query email from firebase when make moves is hit
+
 //**JS LOADED BEFOREHAND**//
 //warning: must declare js files in loading order in manifest
 //asyncTracking.js -- linked up to Segment for analytics
@@ -11,6 +16,25 @@
 //**REAL FUNCTIONS**//
 
 //structure: when you click button, what happens?
+
+var checkFirebaseForEmail = function (url) {
+  //on page load
+  //check firebase to see if an email exists for that url
+  //if email isn't there yet, generate the email and save to firebase, then store it locally
+  //if email is, store it locally to chrome storage
+}
+
+var saveEmailToFirebase = function (url) {
+  //generates email with getEmailWithURL
+  //saves to firebase with the stripped down url as the key
+
+}
+
+var returnFoundersEmail = function () {
+  //returns the founders email by checking local variable
+  //local variable is actually a function that queries from firebase
+}
+
 
 var getEmailWithURL = function (url) {
     //**crunchbase or team page search by url for founders names
