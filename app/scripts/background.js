@@ -67,11 +67,12 @@ var makeMoves = function(shortURL, fullURL) {
     if (result.hasOwnProperty(domain)) {
       alert(result[domain])
     } else {  //check firebase
-      getFirebaseJSON(function(JSON) {
+      getFirebaseObj(function(obj) {
         //if we find the email in firebase, save it to chrome, then just alert it
-        if (JSON.hasOwnProperty(domain)) {
-          saveFounderObjToChrome(shortURL, JSON[domain])
-          alert(JSON[domain])
+        if (obj.hasOwnProperty(domain)) {
+          //if its in firebase but not chrome, save to chrome
+          saveFounderObjToChrome(shortURL, obj[domain])
+          alert(obj[domain])
         } else {  //query parse
           getEmailWithURL(shortURL, function(err, result) {
             if (err) {
@@ -87,11 +88,11 @@ var makeMoves = function(shortURL, fullURL) {
     //chrome.extension.getBackgroundPage().console.log('Made Moves');
 };
 
-//grab firebaseJSON
+//grab firebaseObj
 //store in chrome storage
 //**WONT SCALE BC OF ITEM CAPS**//
-var getFirebaseJSON = function (callback) {
-  //grabs and returns full firebase JSON
+var getFirebaseObj = function (callback) {
+  //grabs and returns full firebase obj
   myFirebaseRef.on("value", function(snapshot) {
     console.log(snapshot.val());  // Alerts "San Francisco"
     callback(snapshot.val());
@@ -111,37 +112,6 @@ var getEmailWithURL = function (url, callback) {
     });
 };
 
-
-
-function Startup (shortURL) {
-    //hackmatch.com
-    this.shortURL = shortURL
-    //hackmatch
-    this.domainName = stripTLD(shortURL)
-    //foundersEmail
-    this.saveFoundersEmail = function(callback) {
-      //run this after creating startup to sync data to firebase, parse, chrome
-      syncFounderEmail(this.shortURL, function(result) {
-        console.log('synced: ' + result)
-      })
-    }
-    // this.getInfo = function() {
-    //     return this.color + ' ' + this.type + ' apple';
-    // };
-}
-
-var syncFounderEmail = function(domain, founderEmail) {
-
-}
-syncFounderEmail("hackmatch.com", "dave@hackmatch.com")
-
-//When creating a Startup, make sure I strip subdomains
-
-  // var hostname = parseUrl(tab.url).hostname;
-
-  // console.log(Parse);
-  // makeMoves(stripSubdomains(hostname), tab.url);
-
 var saveFounderObj = function(url, email) {
   saveFounderObjToFirebase(url, email)
   saveFounderObjToChrome(url, email)
@@ -153,79 +123,14 @@ var saveFounderObjToFirebase = function(url, email) {
 
 var saveFounderObjToChrome = function(url, email) {
   //watch out for overwriting what's already there every time
+  //solved this by just writing a new object at the base level every time
+  //may need to have a separate object for storing these values
   chrome.storage.sync.set(returnFounderObj(url, email));
 }
 
 //**when new tab opens, check if domain exists in firebase and save to chrome
-var syncStartupFromFirebaseToChrome = function() {
+var syncFromFirebaseToChrome = function() {
 
-}
-
-var returnFounderObj = function (shortURL, email) {
-  var domain = stripTLD(shortURL)
-  var founderObj = {}
-  founderObj[domain] = email
-  return founderObj
-}
-
-var saveFoundersEmailToFirebase = function(url, callback) {
-  Parse.Cloud.run('getFoundersEmail', {url: url}, {
-    success: function(email) {
-      //may need to be a callback
-      saveFounderObjToFirebase(url, email)
-      saveFounderObjToChrome(url, email)
-    },
-    error: function(error) {
-      console.log(error);
-    }
-  });
-}
-
-var stripTLD = function (url) {
-  var n = url.indexOf('.');
-  var domain = url.substring(0, n != -1 ? n : url.length);
-  //console.log(domain);
-  return domain
-}
-//stripTLD(stripSubdomains(parseUrl(tab.url).hostname))
-console.log(stripTLD("hackmatch.com"))
-
-//keys are just '_startup_' in ('_startup_' + '.com')
-var checkIfURLExistsInFirebase = function (json, url) {
-  var key = stripTLD(url)
-  if(json.hasOwnProperty(key)){
-    console.log('has key')
-  } else {
-    console.log('doesnt have key')
-    saveFoundersEmailToFirebase("firebase.com", function() {
-      console.log('saved founders email to firebase')
-    })
-  }
-}
-getFirebaseJSON(function(JSON) {
-  //dynamically check subdomain
-  //subdomain without .com stripSubdomains(hostname).?
-  checkIfURLExistsInFirebase(JSON, "twitter.com")
-})
-
-
-var checkFirebaseForEmail = function (url) {
-  //on page load
-  //check firebase to see if an email exists for that url
-  //if email isn't there yet, generate the email and save to firebase, then store it locally
-  //if email is, store it locally to chrome storage
-
-}
-
-var saveEmailToFirebase = function (url) {
-  //generates email with getEmailWithURL
-  //saves to firebase with the stripped down url as the key
-
-}
-
-var returnFoundersEmail = function () {
-  //returns the founders email by checking local variable
-  //local variable is actually a function that queries from firebase
 }
 
 
@@ -312,6 +217,23 @@ var stripSubdomains = function (url) {
   }
 };
 
+//Helper functions to format URLs
+var returnFounderObj = function (shortURL, email) {
+  var domain = stripTLD(shortURL)
+  var founderObj = {}
+  founderObj[domain] = email
+  return founderObj
+}
+
+var stripTLD = function (url) {
+  var n = url.indexOf('.');
+  var domain = url.substring(0, n != -1 ? n : url.length);
+  //console.log(domain);
+  return domain
+}
+//stripTLD(stripSubdomains(parseUrl(tab.url).hostname))
+
+//**NOT SURE WHAT THIS IS BELOW
 chrome.runtime.onInstalled.addListener(function(info){
     //    
     // info.reason should contain either "install" or "update"
