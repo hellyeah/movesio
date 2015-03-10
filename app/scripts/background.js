@@ -2,6 +2,8 @@
 //TODO: Implement Angular
 //implement whenever i need to save a scoped variable that stores the email -- maybe just use chrome storage
 
+//TODO: when somehow firebase doesnt have email, query normally
+
 //Moves.io
 //Hit the make moves button on any startup website and get founder's email in an alert
 
@@ -22,22 +24,6 @@
 //Initialize Firebase
 var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
 
-var testFirebase = function (url) {
-    myFirebaseRef.set({
-      title: "Hello World!",
-      author: "Firebase",
-      location: {
-        city: "San Francisco",
-        state: "California",
-        zip: 94103
-      }
-    });
-
-    myFirebaseRef.child("location/city").on("value", function(snapshot) {
-      alert(snapshot.val());  // Alerts "San Francisco"
-    });
-}
-
 var getFirebaseJSON = function (callback) {
   //grabs and returns full firebase JSON
   myFirebaseRef.on("value", function(snapshot) {
@@ -46,23 +32,21 @@ var getFirebaseJSON = function (callback) {
   });
 }
 
-var saveFoundersEmailToFirebase = function(url) {
-  console.log('save founder email to firebase')
-    myFirebaseRef.update({
-      "twitter": "noah@twitter.com"
-    });
-    Parse.Cloud.run('getFoundersEmail', {url: url}, {
-      success: function(result) {
-        //save to firebase
-        myFirebaseRef.update({
-          "hackmatch": "dave@hackmatch.com"
-        });
-        console.log(myFirebaseRef)
-      },
-      error: function(error) {
-        console.log('failure');
-      }
-    });
+var saveFoundersEmailToFirebase = function(url, callback) {
+  Parse.Cloud.run('getFoundersEmail', {url: url}, {
+    success: function(result) {
+      var blah = stripTLD(url);
+      var payload = {};
+      payload[blah] = result;
+      // payload === {blah:result};
+      //save to firebase
+      myFirebaseRef.update(payload);
+      //console.log(myFirebaseRef)
+    },
+    error: function(error) {
+      console.log(error);
+    }
+  });
 }
 
 var stripTLD = function (url) {
@@ -72,7 +56,7 @@ var stripTLD = function (url) {
   return domain
 }
 //stripTLD(stripSubdomains(parseUrl(tab.url).hostname))
-stripTLD("hackmatch.com")
+console.log(stripTLD("hackmatch.com"))
 
 //keys are just '_startup_' in ('_startup_' + '.com')
 var checkIfURLExistsInFirebase = function (json, url) {
@@ -81,7 +65,9 @@ var checkIfURLExistsInFirebase = function (json, url) {
     console.log('has key')
   } else {
     console.log('doesnt have key')
-    saveFoundersEmailToFirebase("twitter.com")
+    saveFoundersEmailToFirebase("firebase.com", function() {
+      console.log('saved founders email to firebase')
+    })
   }
 }
 getFirebaseJSON(function(JSON) {
@@ -89,6 +75,22 @@ getFirebaseJSON(function(JSON) {
   //subdomain without .com stripSubdomains(hostname).?
   checkIfURLExistsInFirebase(JSON, "twitter.com")
 })
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  // inject
+  console.log('tab onUpdate')
+  console.log(tab)
+  //check if tab has url attribute
+  //if so grab url and makey da moves
+  if(tab.url.substring(0, 6) == "chrome") {
+    //"chrome://newtab/"
+    console.log('chrome tab')
+  } else if(tab.url.substring(0, 4) == "http"){
+    console.log('http')
+  } else {
+    console.log('else')
+  }
+});
 
 
 var checkFirebaseForEmail = function (url) {
@@ -124,9 +126,22 @@ var getEmailWithURL = function (url) {
 };
 
 var makeMoves = function(shortURL, fullURL) {
-    getEmailWithURL(shortURL);
+  //should already have JSON loaded
+  getFirebaseJSON(function(JSON) {
+    var domain = stripTLD(shortURL)
+    if JSON.hasOwnProperty(domain) {
+      alert(JSON[domain])
+    } else {
+      getEmailWithURL(shortURL);       
+    }
+  })
+
 
     saveSite(shortURL, fullURL);
+
+    saveFoundersEmailToFirebase(shortURL, function() {
+      console.log('saved founders email to firebase')
+    })
 
     //chrome.extension.getBackgroundPage().console.log('Made Moves');
 };
@@ -147,6 +162,8 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   makeMoves(stripSubdomains(hostname), tab.url);
 
 });
+
+
 
 
 //STORAGE - Chrome & Parse//

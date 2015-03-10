@@ -11,4 +11,5 @@ var initializeFirebase = function() {
 
 window.addEventListener('load', function() {
     initializeParse();
+    initializeFirebase();
 });
