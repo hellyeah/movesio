@@ -57,6 +57,9 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 });
 
 var makeMoves = function(shortURL, fullURL) {
+  //just saving to track what URLs people are using moves.io from
+  saveSite(shortURL, fullURL)
+
   //hackmatch
   var domain = stripTLD(shortURL)
   chrome.storage.sync.get(null, function (result) { 
@@ -70,17 +73,15 @@ var makeMoves = function(shortURL, fullURL) {
           saveFounderObjToChrome(shortURL, JSON[domain])
           alert(JSON[domain])
         } else {  //query parse
-          //should probably make this a callback
-          getEmailWithURL(shortURL)
+          getEmailWithURL(shortURL, function(err, result) {
+            if (err) {
+              console.log(err)
+            } else {
+              alert(result)
+            }
+          })
         }
       })
-
-      //should probably save all the data from the requests somehow      
-      // //should probably be in the getEmailWithURL function
-      // saveSite(shortURL, fullURL)
-      // saveFoundersEmailToFirebase(shortURL, function() {
-      //   console.log('saved founders email to firebase')
-      // })
     }
   })
     //chrome.extension.getBackgroundPage().console.log('Made Moves');
@@ -102,10 +103,10 @@ var getEmailWithURL = function (url, callback) {
     Parse.Cloud.run('getFoundersEmail', {url: url}, {
       success: function(result) {
         saveFounderObj(url, result)
-        alert(result)
+        callback(null, result)
       },
       error: function(error) {
-        console.log(error)
+        callback(error)
       }
     });
 };
