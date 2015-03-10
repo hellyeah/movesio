@@ -24,6 +24,86 @@
 //Initialize Firebase
 var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
 
+//every time a new tab opens, we want to sync the founders email data
+//if its not already in chrome, check firebase
+//if its not in firebase, query for the data with parse cloud code
+//then update firebase, then store in chrome storage
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  // inject
+  console.log('tab onUpdate')
+  console.log(tab)
+  //check if tab has url attribute
+  //if so grab url and makey da moves
+  if(tab.url.substring(0, 6) == "chrome") {
+    //"chrome://newtab/"
+    console.log('chrome tab')
+  } else if(tab.url.substring(0, 4) == "http"){
+    console.log('http')
+  } else {
+    console.log('else')
+  }
+});
+
+var makeMoves = function(shortURL, fullURL) {
+  //hackmatch
+  var domain = stripTLD(shortURL)
+  chrome.storage.sync.get(null, function (result) { 
+    //if we find the email in chrome storage
+    if (result.hasOwnProperty(domain)) {
+      alert(result[domain])
+    } else {
+      //should already have JSON loaded
+      getFirebaseJSON(function(JSON) {
+        if (JSON.hasOwnProperty(domain)) {
+          alert(JSON[domain])
+        } else {
+          getEmailWithURL(shortURL)
+        }
+      })
+
+      saveSite(shortURL, fullURL)
+      saveFoundersEmailToFirebase(shortURL, function() {
+        console.log('saved founders email to firebase')
+      })
+    }
+  })
+    //chrome.extension.getBackgroundPage().console.log('Made Moves');
+};
+
+
+
+function Startup (shortURL) {
+    //hackmatch.com
+    this.shortURL = shortURL
+    //hackmatch
+    this.domainName = stripTLD(shortURL)
+    //foundersEmail
+    this.saveFoundersEmail = function(callback) {
+      //run this after creating startup to sync data to firebase, parse, chrome
+      syncFounderEmail(this.shortURL, function(result) {
+        console.log('synced: ' + result)
+      })
+    }
+    // this.getInfo = function() {
+    //     return this.color + ' ' + this.type + ' apple';
+    // };
+}
+
+var syncFounderEmail = function(domain, founderEmail) {
+
+}
+syncFounderEmail("hackmatch.com", "dave@hackmatch.com")
+
+//When creating a Startup, make sure I strip subdomains
+
+  // var hostname = parseUrl(tab.url).hostname;
+
+  // console.log(Parse);
+  // makeMoves(stripSubdomains(hostname), tab.url);
+
+//grab firebaseJSON
+//store in chrome storage
+//**WONT SCALE BC OF ITEM CAPS**//
 var getFirebaseJSON = function (callback) {
   //grabs and returns full firebase JSON
   myFirebaseRef.on("value", function(snapshot) {
@@ -32,16 +112,35 @@ var getFirebaseJSON = function (callback) {
   });
 }
 
+var saveFounderObjToFirebase = function(url, email) {
+  myFirebaseRef.update(returnFounderObj(url, email))
+}
+
+var saveFounderObjToChrome = function(url, email) {
+  //watch out for overwriting what's already there every time
+  chrome.storage.sync.set(returnFounderObj(url, email));
+}
+
+//when new tab opens, check if domain exists in firebase and save to chrome
+var syncStartupFromFirebaseToChrome = function() {
+
+}
+
+
+
+var returnFounderObj = function (url, email) {
+  var domain = stripTLD(url)
+  var founderObj = {}
+  founderObj[domain] = email
+  return founderObj
+}
+
 var saveFoundersEmailToFirebase = function(url, callback) {
   Parse.Cloud.run('getFoundersEmail', {url: url}, {
-    success: function(result) {
-      var blah = stripTLD(url);
-      var payload = {};
-      payload[blah] = result;
-      // payload === {blah:result};
-      //save to firebase
-      myFirebaseRef.update(payload);
-      //console.log(myFirebaseRef)
+    success: function(email) {
+      //may need to be a callback
+      saveFounderObjToFirebase(url, email)
+      saveFounderObjToChrome(url, email)
     },
     error: function(error) {
       console.log(error);
@@ -76,22 +175,6 @@ getFirebaseJSON(function(JSON) {
   checkIfURLExistsInFirebase(JSON, "twitter.com")
 })
 
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  // inject
-  console.log('tab onUpdate')
-  console.log(tab)
-  //check if tab has url attribute
-  //if so grab url and makey da moves
-  if(tab.url.substring(0, 6) == "chrome") {
-    //"chrome://newtab/"
-    console.log('chrome tab')
-  } else if(tab.url.substring(0, 4) == "http"){
-    console.log('http')
-  } else {
-    console.log('else')
-  }
-});
-
 
 var checkFirebaseForEmail = function (url) {
   //on page load
@@ -120,30 +203,9 @@ var getEmailWithURL = function (url) {
         alert(result);
       },
       error: function(error) {
-        console.log('failure');
+        console.log(error);
       }
     });
-};
-
-var makeMoves = function(shortURL, fullURL) {
-  //should already have JSON loaded
-  getFirebaseJSON(function(JSON) {
-    var domain = stripTLD(shortURL)
-    if JSON.hasOwnProperty(domain) {
-      alert(JSON[domain])
-    } else {
-      getEmailWithURL(shortURL);       
-    }
-  })
-
-
-    saveSite(shortURL, fullURL);
-
-    saveFoundersEmailToFirebase(shortURL, function() {
-      console.log('saved founders email to firebase')
-    })
-
-    //chrome.extension.getBackgroundPage().console.log('Made Moves');
 };
 
 // Called when the user clicks on the browser action.
@@ -167,15 +229,25 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 
 //STORAGE - Chrome & Parse//
+//global startupsArray variable?
 
 var appendToStorage = function(startup) {
   chrome.storage.sync.get(null, function(result) {
     //forsome reason this prints the new results with startup pushed
+    if (!result.hasOwnProperty("startupsArray")) {   
+      result.startupsArray = [];  
+    }
     console.log(result);
-    result.startupsArray.push(startup);
+    result.startupsArray.push(startup); 
+
+    // var blah = stripTLD(url);
+    // var payload = {};
+    // payload[blah] = result;
+
     chrome.storage.sync.set({'startupsArray': result.startupsArray}, function() {});
   });
 }
+appendToStorage("hackmatch.com")
 
 var saveSiteToParse = function(shortURL, longURL, callback) {
     var Startup = Parse.Object.extend("Startups");
