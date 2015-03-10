@@ -117,7 +117,7 @@ var getEmailWithURL = function (url) {
     //**crunchbase or team page search by url for founders names
     Parse.Cloud.run('getFoundersEmail', {url: url}, {
       success: function(result) {
-        alert(result);
+        prompt("Copy to clipboard: Ctrl+C, Enter", result);
       },
       error: function(error) {
         console.log('failure');
