@@ -44,30 +44,70 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   }
 });
 
+// Called when the user clicks on the browser action.
+chrome.browserAction.onClicked.addListener(function(tab) {
+  // No tabs or host permissions needed! 
+  // tab.url is current url
+  analytics.track('click', {
+    category: 'sitesClicked',
+    label: tab.url
+  });
+  var hostname = parseUrl(tab.url).hostname;
+  makeMoves(stripSubdomains(hostname), tab.url);
+});
+
 var makeMoves = function(shortURL, fullURL) {
   //hackmatch
   var domain = stripTLD(shortURL)
   chrome.storage.sync.get(null, function (result) { 
-    //if we find the email in chrome storage
+    //if we find the email in chrome storage, just alert it
     if (result.hasOwnProperty(domain)) {
       alert(result[domain])
-    } else {
-      //should already have JSON loaded
+    } else {  //check firebase
       getFirebaseJSON(function(JSON) {
+        //if we find the email in firebase, save it to chrome, then just alert it
         if (JSON.hasOwnProperty(domain)) {
+          saveFounderObjToChrome(shortURL, JSON[domain])
           alert(JSON[domain])
-        } else {
+        } else {  //query parse
+          //should probably make this a callback
           getEmailWithURL(shortURL)
         }
       })
 
-      saveSite(shortURL, fullURL)
-      saveFoundersEmailToFirebase(shortURL, function() {
-        console.log('saved founders email to firebase')
-      })
+      //should probably save all the data from the requests somehow      
+      // //should probably be in the getEmailWithURL function
+      // saveSite(shortURL, fullURL)
+      // saveFoundersEmailToFirebase(shortURL, function() {
+      //   console.log('saved founders email to firebase')
+      // })
     }
   })
     //chrome.extension.getBackgroundPage().console.log('Made Moves');
+};
+
+//grab firebaseJSON
+//store in chrome storage
+//**WONT SCALE BC OF ITEM CAPS**//
+var getFirebaseJSON = function (callback) {
+  //grabs and returns full firebase JSON
+  myFirebaseRef.on("value", function(snapshot) {
+    console.log(snapshot.val());  // Alerts "San Francisco"
+    callback(snapshot.val());
+  });
+}
+
+var getEmailWithURL = function (url, callback) {
+    //**crunchbase or team page search by url for founders names
+    Parse.Cloud.run('getFoundersEmail', {url: url}, {
+      success: function(result) {
+        saveFounderObj(url, result)
+        alert(result)
+      },
+      error: function(error) {
+        console.log(error)
+      }
+    });
 };
 
 
@@ -101,15 +141,9 @@ syncFounderEmail("hackmatch.com", "dave@hackmatch.com")
   // console.log(Parse);
   // makeMoves(stripSubdomains(hostname), tab.url);
 
-//grab firebaseJSON
-//store in chrome storage
-//**WONT SCALE BC OF ITEM CAPS**//
-var getFirebaseJSON = function (callback) {
-  //grabs and returns full firebase JSON
-  myFirebaseRef.on("value", function(snapshot) {
-    console.log(snapshot.val());  // Alerts "San Francisco"
-    callback(snapshot.val());
-  });
+var saveFounderObj = function(url, email) {
+  saveFounderObjToFirebase(url, email)
+  saveFounderObjToChrome(url, email)
 }
 
 var saveFounderObjToFirebase = function(url, email) {
@@ -121,15 +155,13 @@ var saveFounderObjToChrome = function(url, email) {
   chrome.storage.sync.set(returnFounderObj(url, email));
 }
 
-//when new tab opens, check if domain exists in firebase and save to chrome
+//**when new tab opens, check if domain exists in firebase and save to chrome
 var syncStartupFromFirebaseToChrome = function() {
 
 }
 
-
-
-var returnFounderObj = function (url, email) {
-  var domain = stripTLD(url)
+var returnFounderObj = function (shortURL, email) {
+  var domain = stripTLD(shortURL)
   var founderObj = {}
   founderObj[domain] = email
   return founderObj
@@ -194,36 +226,6 @@ var returnFoundersEmail = function () {
   //returns the founders email by checking local variable
   //local variable is actually a function that queries from firebase
 }
-
-
-var getEmailWithURL = function (url) {
-    //**crunchbase or team page search by url for founders names
-    Parse.Cloud.run('getFoundersEmail', {url: url}, {
-      success: function(result) {
-        alert(result);
-      },
-      error: function(error) {
-        console.log(error);
-      }
-    });
-};
-
-// Called when the user clicks on the browser action.
-chrome.browserAction.onClicked.addListener(function(tab) {
-  // No tabs or host permissions needed! 
-  // tab.url is current url
-
-  analytics.track('click', {
-    category: 'sitesClicked',
-    label: tab.url
-  });
-
-  var hostname = parseUrl(tab.url).hostname;
-
-  console.log(Parse);
-  makeMoves(stripSubdomains(hostname), tab.url);
-
-});
 
 
 
