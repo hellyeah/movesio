@@ -28,10 +28,16 @@ var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
 //if its not already in chrome, check firebase
 //if its not in firebase, query for the data with parse cloud code
 //then update firebase, then store in chrome storage
+//**PROBLEM: why does this run multiple times?
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   // inject
   console.log('tab onUpdate')
   console.log(tab)
+  console.log(changeInfo)
+
+  var hostname = parseUrl(tab.url).hostname;
+  //makeMoves(stripSubdomains(hostname), tab.url);
+
   //check if tab has url attribute
   //if so grab url and makey da moves
   if(tab.url.substring(0, 6) == "chrome") {
@@ -39,6 +45,11 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     console.log('chrome tab')
   } else if(tab.url.substring(0, 4) == "http"){
     console.log('http')
+    //getting called like 6 times
+    // makeMovesOnThisSite(stripSubdomains(hostname), function(result) {
+    //   console.log(result)
+    // })
+    //should i still save site when its just preloading?
   } else {
     console.log('else')
   }
@@ -60,33 +71,49 @@ var makeMoves = function(shortURL, fullURL) {
   //just saving to track what URLs people are using moves.io from
   saveSite(shortURL, fullURL)
 
+
+  makeMovesOnThisSite(shortURL, function(err, result) {
+    if (err) {
+      console.log(err)
+    } else {
+      alert(result)
+    }
+  }) 
+
+    //chrome.extension.getBackgroundPage().console.log('Made Moves');
+};
+
+//queries for email -- makes sure 
+//problem with alerts -- turned all alerts into callbacks
+var makeMovesOnThisSite = function(shortURL, callback) {
   //hackmatch
   var domain = stripTLD(shortURL)
+
   chrome.storage.sync.get(null, function (result) { 
     //if we find the email in chrome storage, just alert it
     if (result.hasOwnProperty(domain)) {
-      alert(result[domain])
+      callback(null, result[domain])
     } else {  //check firebase
       getFirebaseObj(function(obj) {
         //if we find the email in firebase, save it to chrome, then just alert it
         if (obj.hasOwnProperty(domain)) {
           //if its in firebase but not chrome, save to chrome
           saveFounderObjToChrome(shortURL, obj[domain])
-          alert(obj[domain])
+          callback(null, obj[domain])
         } else {  //query parse
           getEmailWithURL(shortURL, function(err, result) {
             if (err) {
-              console.log(err)
+              callback(err)
             } else {
-              alert(result)
+              //**might want to move saveFounderObj to here
+              callback(null, result)
             }
           })
         }
       })
     }
   })
-    //chrome.extension.getBackgroundPage().console.log('Made Moves');
-};
+}
 
 //grab firebaseObj
 //store in chrome storage
