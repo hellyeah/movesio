@@ -33,12 +33,9 @@ var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
 //if its not already in chrome, check firebase
 //if its not in firebase, query for the data with parse cloud code
 //then update firebase, then store in chrome storage
-//**PROBLEM: why does this run multiple times?
+//**PROBLEM: why does this run multiple times? Answer: different states
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   // inject
-  console.log('tab onUpdate')
-  console.log(tab)
-  console.log(changeInfo)
 
   var hostname = parseUrl(tab.url).hostname
   var strippedURL = stripSubdomains(hostname)
@@ -48,26 +45,24 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   //if so grab url and makey da moves
   if(tab.url.substring(0, 6) == "chrome") {
     //"chrome://newtab/"
-    console.log('chrome tab')
+    //console.log('chrome tab')
   } else if(tab.url.substring(0, 4) == "http"){
-    console.log('http')
+    //console.log('http')
     if (settingLocalStartup(stripSubdomains(hostname))) {
-      console.log('URL already loaded')
       //do nothing -- state is already set for loading that URL's email
     } else {
-      console.log('loading URL')
       //getting called like 6 times
       makeMovesOnThisSite(stripSubdomains(hostname), function(err, result) {
         if (err) {
           console.log(err)
         } else {
-          console.log(result)
+          //console.log(result)
         }
       })
       //should i still save site when its just preloading?      
     }
   } else {
-    console.log('else')
+    //console.log('not a new tab or http site')
   }
 });
 
@@ -138,7 +133,7 @@ var makeMovesOnThisSite = function(shortURL, callback) {
 var getFirebaseObj = function (callback) {
   //grabs and returns full firebase obj
   myFirebaseRef.on("value", function(snapshot) {
-    console.log(snapshot.val());  // Alerts "San Francisco"
+    //console.log(snapshot.val());  // Alerts "San Francisco"
     callback(snapshot.val());
   });
 }
@@ -189,7 +184,7 @@ var appendToStorage = function(startup) {
     if (!result.hasOwnProperty("startupsArray")) {   
       result.startupsArray = [];  
     }
-    console.log(result);
+    //console.log(result);
     result.startupsArray.push(startup); 
 
     // var blah = stripTLD(url);
@@ -222,7 +217,6 @@ var saveSite = function (shortURL, longURL) {
 var loadStartupsLocally = function() {
   getFirebaseObj(function(obj) {
     localStartups = obj;
-    console.log(localStartups);
   })
 }
 //runs three times at load
@@ -234,18 +228,14 @@ loadStartupsLocally()
 //else it changes the state for that URL and returns false
 var settingLocalStartup = function(shortURL) {
   var domain = stripTLD(shortURL)
-  console.log(domain)
-  console.log(localStartups[domain])
   if(!localStartups[domain]) {
-    console.log('changing state')
+    //console.log('changing state')
     localStartups[domain] = true 
     return false
   } else {
-    console.log('localStartups not undefined for URL')
     return true
   }
 }
-
 
 //HELPER FUNCTIONS//
 
@@ -300,7 +290,6 @@ var returnFounderObj = function (shortURL, email) {
 var stripTLD = function (url) {
   var n = url.indexOf('.');
   var domain = url.substring(0, n != -1 ? n : url.length);
-  //console.log(domain);
   return domain
 }
 //stripTLD(stripSubdomains(parseUrl(tab.url).hostname))
