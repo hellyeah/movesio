@@ -29,6 +29,63 @@ var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
 
 //load into global variable for quick use -- angular?
 
+//queries for email -- makes sure 
+//problem with alerts -- turned all alerts into callbacks
+var makeMovesOnThisSite = function(shortURL, callback) {
+  //hackmatch
+  var domain = stripTLD(shortURL)
+
+  chrome.storage.sync.get(null, function (result) { 
+    console.log(result)
+    //if we find the email in chrome storage, just alert it
+    if (result.hasOwnProperty(domain)) {
+      callback(null, result[domain])
+    } else {  //check firebase
+      getFirebaseObj(function(obj) {
+        //if we find the email in firebase, save it to chrome, then just alert it
+        if (obj.hasOwnProperty(domain)) {
+          //if its in firebase but not chrome, save to chrome
+          saveFounderObjToChrome(shortURL, obj[domain])
+          callback(null, obj[domain])
+        } else {  //query parse
+          getEmailWithURL(shortURL, function(err, result) {
+            if (err) {
+              callback(err)
+            } else {
+              //**might want to move saveFounderObj to here
+              callback(null, result)
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
+//executes when make moves button is clicked
+var makeMoves = function(shortURL, fullURL, callback) {
+  console.log('make moves')
+  //just saving to track what URLs people are using moves.io from
+  // saveSite(shortURL, fullURL, function(result) {
+  //   //do nothing
+  // })
+
+
+  makeMovesOnThisSite(shortURL, function(err, result) {
+    console.log('moves on this site ran with alert')
+    if (err) {
+      console.log(err)
+      callback(err)
+    } else {
+      //console.log(result)
+      alert(result)
+      callback(result)
+    }
+  }) 
+
+    //chrome.extension.getBackgroundPage().console.log('Made Moves');
+};
+
 //every time a new tab opens, we want to sync the founders email data
 //if its not already in chrome, check firebase
 //if its not in firebase, query for the data with parse cloud code
@@ -39,7 +96,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
   var hostname = parseUrl(tab.url).hostname
   var strippedURL = stripSubdomains(hostname)
-  //makeMoves(stripSubdomains(hostname), tab.url);
 
   //check if tab has url attribute
   //if so grab url and makey da moves
@@ -75,61 +131,10 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     label: tab.url
   });
   var hostname = parseUrl(tab.url).hostname;
-  makeMoves(stripSubdomains(hostname), tab.url);
+  makeMoves(stripSubdomains(hostname), tab.url, function(result) {
+    console.log(result)
+  });
 });
-
-//executes when make moves button is clicked
-var makeMoves = function(shortURL, fullURL) {
-  console.log('make moves')
-  //just saving to track what URLs people are using moves.io from
-  saveSite(shortURL, fullURL, function(result) {
-    //do nothing
-  })
-
-
-  makeMovesOnThisSite(shortURL, function(err, result) {
-    if (err) {
-      console.log(err)
-    } else {
-      //console.log(result)
-      alert(result)
-    }
-  }) 
-
-    //chrome.extension.getBackgroundPage().console.log('Made Moves');
-};
-
-//queries for email -- makes sure 
-//problem with alerts -- turned all alerts into callbacks
-var makeMovesOnThisSite = function(shortURL, callback) {
-  //hackmatch
-  var domain = stripTLD(shortURL)
-
-  chrome.storage.sync.get(null, function (result) { 
-    //if we find the email in chrome storage, just alert it
-    if (result.hasOwnProperty(domain)) {
-      callback(null, result[domain])
-    } else {  //check firebase
-      getFirebaseObj(function(obj) {
-        //if we find the email in firebase, save it to chrome, then just alert it
-        if (obj.hasOwnProperty(domain)) {
-          //if its in firebase but not chrome, save to chrome
-          saveFounderObjToChrome(shortURL, obj[domain])
-          callback(null, obj[domain])
-        } else {  //query parse
-          getEmailWithURL(shortURL, function(err, result) {
-            if (err) {
-              callback(err)
-            } else {
-              //**might want to move saveFounderObj to here
-              callback(null, result)
-            }
-          })
-        }
-      })
-    }
-  })
-}
 
 //grab firebaseObj
 //store in chrome storage

@@ -1,3 +1,5 @@
+"use strict";
+
 //OLD potentially useful JS 
 
 //**asyncTracking.JS**//
