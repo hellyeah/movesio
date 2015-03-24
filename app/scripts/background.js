@@ -80,14 +80,18 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 //executes when make moves button is clicked
 var makeMoves = function(shortURL, fullURL) {
+  console.log('make moves')
   //just saving to track what URLs people are using moves.io from
-  saveSite(shortURL, fullURL)
+  saveSite(shortURL, fullURL, function(result) {
+    //do nothing
+  })
 
 
   makeMovesOnThisSite(shortURL, function(err, result) {
     if (err) {
       console.log(err)
     } else {
+      //console.log(result)
       alert(result)
     }
   }) 
@@ -178,7 +182,7 @@ var syncFromFirebaseToChrome = function() {
 //STORAGE - Global Variable Cache & Chrome & Parse//
 //global startupsArray variable?
 
-var appendToStorage = function(startup) {
+var appendToStorage = function(startup, callback) {
   chrome.storage.sync.get(null, function(result) {
     //forsome reason this prints the new results with startup pushed
     if (!result.hasOwnProperty("startupsArray")) {   
@@ -191,10 +195,10 @@ var appendToStorage = function(startup) {
     // var payload = {};
     // payload[blah] = result;
 
-    chrome.storage.sync.set({'startupsArray': result.startupsArray}, function() {});
+    chrome.storage.sync.set({'startupsArray': result.startupsArray}, function(blah) {callback(blah)});
   });
 }
-appendToStorage("hackmatch.com")
+//appendToStorage("hackmatch.com")
 
 var saveSiteToParse = function(shortURL, longURL, callback) {
     var Startup = Parse.Object.extend("Startups");
@@ -204,13 +208,17 @@ var saveSiteToParse = function(shortURL, longURL, callback) {
     });
 }
 
-var saveSite = function (shortURL, longURL) {
-  saveSiteToParse(shortURL, longURL, function () {
+//*maybe i should append to storage after parse callback?
+var saveSite = function (shortURL, longURL, callback) {
+  saveSiteToParse(shortURL, longURL, function (result) {
     // console.log('saved site to parse');
+    callback(result)
   })
 
   //saveSiteToChrome(shortURL, longURL);
-  appendToStorage(shortURL);
+  appendToStorage(shortURL, function(result) {
+    //do nothing
+  });
 }
 
 //**TESTING Local Copy in Global Variable**

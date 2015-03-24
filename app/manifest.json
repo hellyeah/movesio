@@ -1,6 +1,7 @@
 {
     "name": "__MSG_appName__",
-    "version": "2.4.1",
+    "short_name": "Make Moves",
+    "version": "2.4.5",
     "manifest_version": 2,
     "description": "__MSG_appDescription__",
     "default_locale": "en",
@@ -33,8 +34,10 @@
         "http://*/*",
         "https://*/*"
     ],
-    "icons": { "16": "images/moves_icon.png",
-           "48": "images/moves_icon.png",
-          "128": "images/moves_icon.png" },
+    "icons": {
+        "16": "images/moves_icon.png",
+        "48": "images/moves_icon.png",
+        "128": "images/moves_icon.png"
+    },
     "content_security_policy": "script-src 'unsafe-eval' 'self' https://cdn.firebase.com https://*.firebaseio.com https://parse.com/downloads/javascript/parse-1.3.1.min.js https://ssl.google-analytics.com https://cdn.segment.com/ https://www.google-analytics.com/analytics.js https://cdn.mxpnl.com/libs/mixpanel-2.2.min.js; object-src 'self'"
 }
