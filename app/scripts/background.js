@@ -21,8 +21,13 @@
 
 //structure: when you click button, what happens?
 
+//Initialize global cache variable
+var localStartups = {}
+
 //Initialize Firebase
 var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
+
+//load into global variable for quick use -- angular?
 
 //every time a new tab opens, we want to sync the founders email data
 //if its not already in chrome, check firebase
@@ -35,7 +40,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   console.log(tab)
   console.log(changeInfo)
 
-  var hostname = parseUrl(tab.url).hostname;
+  var hostname = parseUrl(tab.url).hostname
+  var strippedURL = stripSubdomains(hostname)
   //makeMoves(stripSubdomains(hostname), tab.url);
 
   //check if tab has url attribute
@@ -45,11 +51,21 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     console.log('chrome tab')
   } else if(tab.url.substring(0, 4) == "http"){
     console.log('http')
-    //getting called like 6 times
-    // makeMovesOnThisSite(stripSubdomains(hostname), function(result) {
-    //   console.log(result)
-    // })
-    //should i still save site when its just preloading?
+    if (settingLocalStartup(stripSubdomains(hostname))) {
+      console.log('URL already loaded')
+      //do nothing -- state is already set for loading that URL's email
+    } else {
+      console.log('loading URL')
+      //getting called like 6 times
+      makeMovesOnThisSite(stripSubdomains(hostname), function(err, result) {
+        if (err) {
+          console.log(err)
+        } else {
+          console.log(result)
+        }
+      })
+      //should i still save site when its just preloading?      
+    }
   } else {
     console.log('else')
   }
@@ -67,6 +83,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   makeMoves(stripSubdomains(hostname), tab.url);
 });
 
+//executes when make moves button is clicked
 var makeMoves = function(shortURL, fullURL) {
   //just saving to track what URLs people are using moves.io from
   saveSite(shortURL, fullURL)
@@ -163,7 +180,7 @@ var syncFromFirebaseToChrome = function() {
 
 
 
-//STORAGE - Chrome & Parse//
+//STORAGE - Global Variable Cache & Chrome & Parse//
 //global startupsArray variable?
 
 var appendToStorage = function(startup) {
@@ -199,6 +216,34 @@ var saveSite = function (shortURL, longURL) {
 
   //saveSiteToChrome(shortURL, longURL);
   appendToStorage(shortURL);
+}
+
+//**TESTING Local Copy in Global Variable**
+var loadStartupsLocally = function() {
+  getFirebaseObj(function(obj) {
+    localStartups = obj;
+    console.log(localStartups);
+  })
+}
+//runs three times at load
+loadStartupsLocally()
+
+//changes state of local variable for current URL to reflect that we are loading it
+//avoids loading it every time tab listener runs for a URL
+//returns true if localStartups state for that URL is already being set
+//else it changes the state for that URL and returns false
+var settingLocalStartup = function(shortURL) {
+  var domain = stripTLD(shortURL)
+  console.log(domain)
+  console.log(localStartups[domain])
+  if(!localStartups[domain]) {
+    console.log('changing state')
+    localStartups[domain] = true 
+    return false
+  } else {
+    console.log('localStartups not undefined for URL')
+    return true
+  }
 }
 
 
