@@ -23,7 +23,7 @@
 
 //Initialize global cache variable
 var localStartups = {}
-var localStartupsShown = {}
+//var localStartupsShown = {}
 
 //Initialize Firebase
 var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
@@ -49,6 +49,7 @@ var makeMovesOnThisSite = function(shortURL, callback) {
           saveFounderObjToChrome(shortURL, obj[domain])
           callback(null, obj[domain])
         } else {  //query parse
+          //**probably getting called multiple times
           getEmailWithURL(shortURL, function(err, result) {
             if (err) {
               callback(err)
@@ -70,24 +71,32 @@ var makeMoves = function(shortURL, fullURL, callback) {
   // saveSite(shortURL, fullURL, function(result) {
   //   //do nothing
   // })
+  //showedLocalStartup(shortURL)
+  var shownLocalStartup = false
 
-
-  makeMovesOnThisSite(shortURL, function(err, result) {
-    console.log('moves on this site ran with alert')
-    if (err) {
-      console.log(err)
-      callback(err)
-    } else {
-      //console.log(result)
-      if (!showedLocalStartup(shortURL)) {
-        alert(result)
-        callback(result)        
+  if (!shownLocalStartup) {
+    //callback with (null, result)
+    makeMovesOnThisSite(shortURL, function(err, result) {
+      console.log('moves on this site ran with alert')
+      console.log(shownLocalStartup)
+      if (err) {
+        console.log(err)
+        callback(err)
       } else {
-        callback('shown already')
-      }
+        //console.log(result)
+        if (!shownLocalStartup) {
+          shownLocalStartup = true
+          alert(result)
+          callback(result)        
+        } else {
+          callback('shown already')
+        }
 
+      }
+    }) 
+  } else {
+      callback('shown already -- outside function')
     }
-  }) 
 
     //chrome.extension.getBackgroundPage().console.log('Made Moves');
 };
@@ -260,16 +269,16 @@ var settingLocalStartup = function(shortURL) {
 //maybe pass a token as part of the parameter?
 //check if value in this JSON is true -- if so, we've already alerted for that domain
 //hacky fix
-var showedLocalStartup = function(shortURL) {
-  var domain = stripTLD(shortURL)
-  if(!localStartupsShown[domain]) {
-    //console.log('changing state')
-    localStartupsShown[domain] = true 
-    return false
-  } else {
-    return true
-  }
-}
+// var showedLocalStartup = function(shortURL) {
+//   var domain = stripTLD(shortURL)
+//   if(!localStartupsShown[domain]) {
+//     //console.log('changing state')
+//     localStartupsShown[domain] = true 
+//     return false
+//   } else {
+//     return true
+//   }
+// }
 
 //HELPER FUNCTIONS//
 
