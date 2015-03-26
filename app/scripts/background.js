@@ -23,6 +23,7 @@
 
 //Initialize global cache variable
 var localStartups = {}
+var localStartupsShown = {}
 
 //Initialize Firebase
 var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
@@ -78,8 +79,13 @@ var makeMoves = function(shortURL, fullURL, callback) {
       callback(err)
     } else {
       //console.log(result)
-      alert(result)
-      callback(result)
+      if (!showedLocalStartup(shortURL)) {
+        alert(result)
+        callback(result)        
+      } else {
+        callback('shown already')
+      }
+
     }
   }) 
 
@@ -244,6 +250,21 @@ var settingLocalStartup = function(shortURL) {
   if(!localStartups[domain]) {
     //console.log('changing state')
     localStartups[domain] = true 
+    return false
+  } else {
+    return true
+  }
+}
+
+//showed email for that domain already
+//maybe pass a token as part of the parameter?
+//check if value in this JSON is true -- if so, we've already alerted for that domain
+//hacky fix
+var showedLocalStartup = function(shortURL) {
+  var domain = stripTLD(shortURL)
+  if(!localStartupsShown[domain]) {
+    //console.log('changing state')
+    localStartupsShown[domain] = true 
     return false
   } else {
     return true
