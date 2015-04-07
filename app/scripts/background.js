@@ -35,6 +35,7 @@ var myFirebaseRef = new Firebase("https://moves-io.firebaseio.com/");
 var makeMovesOnThisSite = function(shortURL, callback) {
   //hackmatch
   var domain = stripTLD(shortURL)
+  var localStartupSearched = false
 
   chrome.storage.sync.get(null, function (result) { 
     console.log(result)
@@ -50,14 +51,19 @@ var makeMovesOnThisSite = function(shortURL, callback) {
           callback(null, obj[domain])
         } else {  //query parse
           //**probably getting called multiple times
-          getEmailWithURL(shortURL, function(err, result) {
-            if (err) {
-              callback(err)
-            } else {
-              //**might want to move saveFounderObj to here
-              callback(null, result)
-            }
-          })
+          if(!localStartupSearched) {
+            getEmailWithURL(shortURL, function(err, result) {
+              localStartupSearched = true
+              if (err) {
+                callback(err)
+              } else {
+                //**might want to move saveFounderObj to here
+                callback(null, result)
+              }
+            })            
+          } else {
+            console.log('already loading')
+          }
         }
       })
     }
