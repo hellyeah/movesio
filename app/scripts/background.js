@@ -49,25 +49,32 @@ var makeMovesOnThisSite = function(shortURL, callback) {
           //if its in firebase but not chrome, save to chrome
           saveFounderObjToChrome(shortURL, obj[domain])
           callback(null, obj[domain])
-        } else {  //query parse
-          //**probably getting called multiple times
-          if(!localStartupSearched) {
-            getEmailWithURL(shortURL, function(err, result) {
-              localStartupSearched = true
-              if (err) {
-                callback(err)
-              } else {
-                //**might want to move saveFounderObj to here
-                callback(null, result)
-              }
-            })            
-          } else {
-            console.log('already loading')
-          }
+        } else {  //query parse used to be here
+          //if err is "not found" we can handle the err and choose whether or not to queryParse
+          //dont want to query parse every time new tab is opened
+          //give error that we dont already have the email so that we can handle error and query parse
+          callback("not found")
         }
       })
     }
   })
+}
+
+var queryParse = function(shortURL, callback) {
+  //**probably getting called multiple times
+  if(!localStartupSearched) {
+    getEmailWithURL(shortURL, function(err, result) {
+      localStartupSearched = true
+      if (err) {
+        callback(err)
+      } else {
+        //**might want to move saveFounderObj to here
+        callback(null, result)
+      }
+    })            
+  } else {
+    console.log('already loading')
+  }
 }
 
 //executes when make moves button is clicked
@@ -86,8 +93,19 @@ var makeMoves = function(shortURL, fullURL, callback) {
       console.log('moves on this site ran with alert')
       console.log(shownLocalStartup)
       if (err) {
-        console.log(err)
-        callback(err)
+        if(err==="not found") {
+          //added this in to manually queryParse so that we dont query it every time new tab loads
+          queryParse(shortURL, function(err, result) {
+            if (err) {
+              callback(err)
+            } else {
+              callback(result)
+            }
+          })
+        } else {
+          console.log(err)
+          callback(err)        
+        }
       } else {
         //console.log(result)
         if (!shownLocalStartup) {
