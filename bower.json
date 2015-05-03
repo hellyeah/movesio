@@ -8,7 +8,8 @@
     "firebase": "~2.0.2",
     "angularfire": "~0.8.2",
     "underscore": "~1.7.0",
-    "fontawesome": "~4.2.0"
+    "fontawesome": "~4.2.0",
+    "parse": "~1.3.5"
   },
   "devDependencies": {}
 }
